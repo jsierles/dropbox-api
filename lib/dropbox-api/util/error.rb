@@ -9,7 +9,9 @@ module Dropbox
       class Forbidden < Exception; end
       class NotFound < Exception; end
       class Redirect < Exception; end
-
+      class TooManyRequests < Exception; end
+      class UserOverQuota < Exception; end
+      class UnsupportedMethod < Exception; end
     end
 
   end

@@ -20,9 +20,18 @@ module Dropbox
             when 400, 406
               parsed = MultiJson.decode(response.body)
               raise Dropbox::API::Error.new(parsed["error"])
+            when 405
+              raise Dropbox::API::Error::UnsupportedMethod
             when 300..399
               raise Dropbox::API::Error::Redirect
-            when 500..599
+            when 503
+              parsed = MultiJson.decode(response.body)
+              error_message = "#{parsed["error"]}. Retry after: #{response.headers['Retry-After']}"
+              raise Dropbox::API::Error::TooManyRequests.new(error_message)
+            when 507
+              parsed = MultiJson.decode(response.body)
+              raise Dropbox::API::Error::UserOverQuota.new(parsed["error"])              
+            when 500..502, 504..506, 508..599
               raise Dropbox::API::Error
             else
               options[:raw] ? response.body : MultiJson.decode(response.body)

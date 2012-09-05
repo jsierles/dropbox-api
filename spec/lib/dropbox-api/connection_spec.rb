@@ -36,11 +36,32 @@ describe Dropbox::API::Connection do
       end.should raise_error(Dropbox::API::Error::NotFound)
     end
 
+    it "raises a Dropbox::API::Error::UnsupportedMethod when the response is a 405" do
+      response = mock :code => 405, :body => '{ "a":1}'
+      lambda do
+        @connection.request { response }
+      end.should raise_error(Dropbox::API::Error::UnsupportedMethod)
+    end
+
     it "raises a Dropbox::API::Error when the response is a 3xx" do
       response = mock :code => 301, :body => '{ "a":1}'
       lambda do
         @connection.request { response }
       end.should raise_error(Dropbox::API::Error::Redirect)
+    end
+
+    it "raises a Dropbox::API::Error::UserOverQuota when the response is a 507" do
+      response = mock :code => 507, :body => '{ "a":1}'
+      lambda do
+        @connection.request { response }
+      end.should raise_error(Dropbox::API::Error::UserOverQuota)
+    end
+
+    it "raises a Dropbox::API::Error::TooManyRequests when the response is a 503" do
+      response = mock :code => 503, :body => '{ "a":1}'
+      lambda do
+        @connection.request { response }
+      end.should raise_error(Dropbox::API::Error::TooManyRequests)
     end
 
     it "raises a Dropbox::API::Error when the response is a 5xx" do
