@@ -26,7 +26,7 @@ module Dropbox
               raise Dropbox::API::Error::Redirect
             when 503
               parsed = MultiJson.decode(response.body)
-              error_message = "#{parsed["error"]}. Retry after: #{response.headers['Retry-After']}"
+              error_message = "#{parsed["error"]}. Retry after: #{response['Retry-After']}"
               raise Dropbox::API::Error::TooManyRequests.new(error_message)
             when 507
               parsed = MultiJson.decode(response.body)
